@@ -12,17 +12,29 @@ public class SubmitScoreForm {
     private JLabel scoreLabel;
     private JTextField nicknameInput;
     private JButton submitButton;
+    private JButton closeButton;
     private static int score;
+    private static JFrame frame = new JFrame("Submit Score");
 
     public SubmitScoreForm() {
         submitButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 submitScore(nicknameInput.getText(), score);
+                frame.dispose();
             }
         });
+
         // skriva in poängen i labelen
         scoreLabel.setText(scoreLabel.getText() + score);
+
+        //stänga fönstret
+        closeButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                frame.dispose();
+            }
+        });
     }
 
     public void submitScore(String nick, int score){
@@ -31,7 +43,6 @@ public class SubmitScoreForm {
 
     public void open(int score) {
         this.score = score;
-        JFrame frame = new JFrame("Submit Score");
         frame.setContentPane(new SubmitScoreForm().mainPanel);
         frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         frame.pack();

@@ -13,8 +13,7 @@ public class SnakeMenu{
     private JPanel panelMain;
     private JButton restartButton;
     private HighScoreList highScoreList = new HighScoreList();
-    private static JFrame frame = new JFrame("SnakeMenu");
-
+    private static JFrame frame = new JFrame("Snake Menu");
 
     public SnakeMenu() {
         startButton.addActionListener(new ActionListener() {
@@ -27,6 +26,7 @@ public class SnakeMenu{
         exitButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                //för att avsluta hela programmet
                 System.exit(0);
             }
         });
