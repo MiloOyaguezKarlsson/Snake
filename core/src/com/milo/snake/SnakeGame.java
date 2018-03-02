@@ -3,6 +3,7 @@ package com.milo.snake;
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -29,11 +30,13 @@ public class SnakeGame extends ApplicationAdapter {
     private int moveFreq = 3;
     private SnakeMenu menu;
     private SubmitScoreForm submitScoreForm;
+    private Sound biteSound;
+    private Sound collisionSound;
 
     @Override
     public void create() {
         camera = new OrthographicCamera();
-        //ställa in kameran/skärmen till 160x120
+        //ställa in kameran/skärmen till 80x60
         camera.setToOrtho(true, WIDTH, HEIGHT);
         batch = new SpriteBatch();
         batch.setProjectionMatrix(camera.combined);
@@ -41,6 +44,8 @@ public class SnakeGame extends ApplicationAdapter {
         pixmap = new Pixmap(WIDTH, HEIGHT, Pixmap.Format.RGBA8888);
         texture = new Texture(pixmap);
         sprite = new Sprite(texture);
+        biteSound = Gdx.audio.newSound(Gdx.files.internal("bite.wav"));
+        collisionSound = Gdx.audio.newSound(Gdx.files.internal("whack.wav"));
         menu = new SnakeMenu();
         submitScoreForm = new SubmitScoreForm();
 
@@ -51,15 +56,18 @@ public class SnakeGame extends ApplicationAdapter {
     }
 
     public void restart() {
+        // ta bort ormen
         snake = null;
+        //skapa en ny orm
         snake = new Snake();
         spawnFood();
         points = 0;
+        // skicka till menyn att spelet inte är pausat längre
         restart = false;
     }
 
     public void gameOver(){
-
+        collisionSound.play();
         pauseGame();
         submitScoreForm.open(points);
         restart();
@@ -88,17 +96,17 @@ public class SnakeGame extends ApplicationAdapter {
 
         // input för ormens rörelser, ormen ska inte kunna svänga i motsatt riktning som den rör sig i
         // alltså om den rör sig upp ska man inte kunna svänga ner, samma med alla andra riktningar
-        if (Gdx.input.isKeyPressed(Input.Keys.LEFT) && (snake.getDirections() != Directions.EAST)) {
-            snake.setDirections(Directions.WEST);
+        if (Gdx.input.isKeyPressed(Input.Keys.LEFT) && (snake.getDirection() != Direction.EAST)) {
+            snake.setDirection(Direction.WEST);
         }
-        if (Gdx.input.isKeyPressed(Input.Keys.RIGHT) && (snake.getDirections() != Directions.WEST)) {
-            snake.setDirections(Directions.EAST);
+        if (Gdx.input.isKeyPressed(Input.Keys.RIGHT) && (snake.getDirection() != Direction.WEST)) {
+            snake.setDirection(Direction.EAST);
         }
-        if (Gdx.input.isKeyPressed(Input.Keys.UP) && (snake.getDirections() != Directions.SOUTH)) {
-            snake.setDirections(Directions.NORTH);
+        if (Gdx.input.isKeyPressed(Input.Keys.UP) && (snake.getDirection() != Direction.SOUTH)) {
+            snake.setDirection(Direction.NORTH);
         }
-        if (Gdx.input.isKeyPressed(Input.Keys.DOWN) && (snake.getDirections() != Directions.NORTH)) {
-            snake.setDirections(Directions.SOUTH);
+        if (Gdx.input.isKeyPressed(Input.Keys.DOWN) && (snake.getDirection() != Direction.NORTH)) {
+            snake.setDirection(Direction.SOUTH);
         }
         //ESC för att pausa
         if(Gdx.input.isKeyPressed(Input.Keys.ESCAPE)){
@@ -107,12 +115,13 @@ public class SnakeGame extends ApplicationAdapter {
 
         // kollision mellan ormen och maten
         if (snake.getHead().position.x == food.position.x && snake.getHead().position.y == food.position.y) {
+            biteSound.play();
             points++;
             spawnFood();
             snake.addBodyPart();
         }
 
-        //kolla ormens lollision med sig själv
+        //kolla ormens kollision med sig själv
         for (BodyPart bodyPart : snake.getBody()) {
             if (bodyPart.position.x == snake.getHead().position.x && bodyPart.position.y == snake.getHead().position.y) {
                 gameOver();
@@ -142,9 +151,13 @@ public class SnakeGame extends ApplicationAdapter {
         pixmap.fill();
 
         batch.begin();
+        //rita maten i pixmapen
         food.draw(pixmap);
+        //rita ormen i pixmapen
         snake.draw(pixmap);
+        //göra om pixmapen till en textur
         texture.draw(pixmap, 0, 0);
+        //rita ut spriten som är hela skärmen
         sprite.draw(batch);
         batch.end();
 
@@ -153,5 +166,8 @@ public class SnakeGame extends ApplicationAdapter {
     @Override
     public void dispose() {
         pixmap.dispose();
+        biteSound.dispose();
+        collisionSound.dispose();
+        texture.dispose();
     }
 }

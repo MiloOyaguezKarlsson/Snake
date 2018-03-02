@@ -1,6 +1,6 @@
 package com.milo.snake;
 
-public class GameObject {
+public abstract class GameObject {
     protected Vector2 position;
 
     public GameObject(Vector2 position) {

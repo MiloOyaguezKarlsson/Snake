@@ -37,7 +37,7 @@ public class SubmitScoreForm {
         });
     }
 
-    public void submitScore(String nick, int score){
+    private void submitScore(String nick, int score){
         SQLHandler.postScore(nick, score);
     }
 

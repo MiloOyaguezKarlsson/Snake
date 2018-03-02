@@ -18,7 +18,7 @@
           <component id="60898" class="javax.swing.JTable" binding="scoreTable">
             <constraints/>
             <properties>
-              <autoCreateRowSorter value="true"/>
+              <autoCreateRowSorter value="false"/>
               <fillsViewportHeight value="false"/>
               <font/>
               <rowMargin value="1"/>

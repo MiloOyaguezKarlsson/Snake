@@ -1,5 +1,5 @@
 package com.milo.snake;
 
-public enum Directions {
+public enum Direction {
     NORTH, SOUTH, EAST, WEST
 }
